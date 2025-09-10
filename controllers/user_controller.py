@@ -43,3 +43,19 @@ async def login_user(user: UserLogin):
         "message": "Login successful",
         "body": {"access_token": token, "token_type": "bearer"}
     }
+
+
+async def get_user_by_email(email: str):
+    print(f"Searching for user with email: {email}")
+    user = user_collection.find_one({"email": email})
+    print(f"User found in DB: {user}")
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail={"status": "error", "message": "User not found", "body": None}
+        )
+    return {
+        "status": "success",
+        "message": "User fetched successfully",
+        "body": user_helper(user)
+    }
