@@ -23,6 +23,12 @@ async def get_course_image(course_id: UUID):
     return await course_controller.get_course_image(course_id)
 
 
+# New route to get all modules for a course
+@router.get("/{course_id}/modules")
+async def get_course_modules(course_id: UUID, user: dict = Depends(get_current_user)):
+    return await course_controller.get_course_modules(course_id)
+
+
 # ---------- Modules ----------
 @router.get("/{course_id}/modules/{module_id}")
 async def get_module(course_id: UUID, module_id: UUID, user: dict = Depends(get_current_user)):
