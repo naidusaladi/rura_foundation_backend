@@ -48,21 +48,24 @@ async def get_course_image(course_id: UUID):
             raise HTTPException(status_code=500, detail=f"An error occurred while requesting the image: {e}")
 
 
-# New function to get all modules for a course
+# New function to get all modules for a course with their chapters
 async def get_course_modules(course_id: UUID):
-
-        modules = list(module_collection.find({"course_id": str(course_id)}, {"_id": 0}))
-        if not modules:
-            raise HTTPException(status_code=404, detail={"status": "error", "message": "No modules found for this course", "body": None})
-        return {"status": "success", "message": "Modules fetched", "body": modules}
+    modules = list(module_collection.find({"course_id": str(course_id)}, {"_id": 0}))
+    if not modules:
+        raise HTTPException(status_code=404, detail={"status": "error", "message": "No modules found for this course", "body": None})
+    
+    # Add chapters to each module
+    for module in modules:
+        chapters = list(chapter_collection.find({"course_id": str(course_id), "module_id": module["module_id"]}, {"_id": 0}))
+        module["chapters"] = chapters
+    
+    return {"status": "success", "message": "Modules with chapters fetched", "body": modules}
    
-async def get_module_chapter(course_id: UUID,module_id: UUID):
-
-        modules = list(module_collection.find({"course_id": str(course_id)}, {"_id": 0}))
-        chapters =  list(module_collection.find({"module_id": str(module_id)}, {"_id": 0}))
-        if not modules and chapters:
-            raise HTTPException(status_code=404, detail={"status": "error", "message": "No chapters found for this course", "body": None})
-        return {"status": "success", "message": "Modules fetched", "body": modules}
+async def get_module_chapter(course_id: UUID, module_id: UUID):
+    chapters = list(chapter_collection.find({"course_id": str(course_id), "module_id": str(module_id)}, {"_id": 0}))
+    if not chapters:
+        raise HTTPException(status_code=404, detail={"status": "error", "message": "No chapters found for this module", "body": None})
+    return {"status": "success", "message": "Chapters fetched", "body": chapters}
 
 # ---------- Module ----------
 async def get_module(course_id: UUID, module_id: UUID):
