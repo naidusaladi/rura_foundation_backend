@@ -35,6 +35,11 @@ async def get_module(course_id: UUID, module_id: UUID, user: dict = Depends(get_
     return await course_controller.get_module(course_id, module_id)
 
 
+@router.get("/{course_id}/modules/{module_id}/chapters")
+async def get_module_chapters(course_id: UUID, module_id: UUID):
+    return await course_controller.get_module_chapter(course_id, module_id)
+
+
 # ---------- Chapters ----------
 @router.get("/{course_id}/modules/{module_id}/chapters/{chapter_id}")
 async def get_chapter(course_id: UUID, module_id: UUID, chapter_id: UUID, user: dict = Depends(get_current_user)):
