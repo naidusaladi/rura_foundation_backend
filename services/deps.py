@@ -16,3 +16,15 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def get_admin_user(current_user: dict = Depends(get_current_user)):
+    user_role = current_user.get("role")
+    
+    if user_role != "admin":
+        raise HTTPException(
+            status_code=403, 
+            detail={"status": "error", "message": "Admin access required", "body": None}
+        )
+    
+    return current_user
